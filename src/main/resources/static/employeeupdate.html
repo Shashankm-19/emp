@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>employeeupdate</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js">
+    </script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+          crossOrigin="anonymous"/>
+</head>
+<body>
+<h2>WELCOME TO EMPLOYEE ADD AND UPDATE PAGE</h2><br><br>
+<form id="formId" class="form-control">
+    <input type="hidden" name="id" id="id">
+    ENTER THE NAME <input type="text" name="name" id="name" placeholder="NAME" class="form-control"><br>
+    ENTER THE ADDRESS LINE ONE <input type="text" name="a1" id="a1" placeholder="LINEONE" class="form-control"><br>
+    ENTER THE ADDRESS LINE TWO <input type="text" name="a2" id="a2" placeholder="LINETWO" class="form-control"><br>
+    ENTER THE CITY <input type="text" name="city" id="city" placeholder="CITY" class="form-control"><br>
+    ENTER THE ZIPCODE <input type="text" name="zip" id="zip" placeholder="ZIPCODE" class="form-control"><br>
+    <input type="button" value="SAVE" ONCLICK="validForm()" class="btn btn-info">
+    <input type="button" value="BACK" ONCLICK="back()" class="btn btn-info">
+</form>
+
+<script>
+    $(document).ready(function (){
+        var id=localStorage.getItem("id")
+        if(id!=null){
+            $.ajax({
+                url:"http://localhost:8080/employee/getbyid/"+id,
+                type:"GET",
+                success:function (res){
+                    $('#id').attr('value',res.employeeNumber)
+                    $('#name').attr('value',res.employeeName)
+                    $('#a1').attr('value',res.addressLineOne)
+                    $('#a2').attr('value',res.addressLineTwo)
+                    $('#city').attr('value',res.city)
+                    $('#zip').attr('value',res.zipcode)
+
+                }
+            })
+        }
+    })
+    function saveAll(){
+        $.ajax({
+            url:"http://localhost:8080/employee/save",
+            type:"POST",
+            contentType:"application/json",
+            data :JSON.stringify({
+                employeeNumber: $('#id').val(),
+                employeeName: $('#name').val(),
+                addressLineOne: $('#a1').val(),
+                addressLineTwo: $('#a2').val(),
+                city: $('#city').val(),
+                zipcode: $('#zip').val()
+            }),
+            success:function (res){
+                back()
+            }
+        })
+    }
+    function back(){
+        localStorage.clear()
+        window.location.href="employeepage.html"
+    }
+    function validForm(){
+        var name=document.forms["formId"]["name"].value.trim();
+        var aOne=document.forms["formId"]["a1"].value.trim();
+        var aTwo=document.forms["formId"]["a2"].value.trim();
+        var cityOne=document.forms["formId"]["city"].value.trim();
+        var zipOne=document.forms["formId"]["zip"].value.trim();
+        if(name==""){
+            alert("enter the valid name")
+            return false;
+        }
+        if(aOne==""){
+            alert("Address cant be empty")
+            return false;
+        }
+        if(aTwo ==""){
+            alert("Address cant be empty")
+            return false;
+        }
+        if(cityOne ==""){
+            alert("Address cant be empty")
+            return false;
+        }
+        if(zipOne==""||zipOne==0){
+            alert("enter the valid zipcode")
+            return false;
+        }
+        saveAll();
+    }
+</script>
+</body>
+</html>
